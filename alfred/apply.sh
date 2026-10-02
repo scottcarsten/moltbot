@@ -50,9 +50,11 @@ WORKSPACE="$(moltbot config get 'agents.list[0].workspace' 2>/dev/null | tail -n
 WORKSPACE="${WORKSPACE/#\~/$HOME}"
 mkdir -p "$WORKSPACE"
 STAMP="$(date +%Y%m%d-%H%M%S)"
-for f in IDENTITY.md USER.md; do
-  [ -f "$WORKSPACE/$f" ] && cp "$WORKSPACE/$f" "$WORKSPACE/$f.bak-$STAMP"
-  cp "$KIT_DIR/$f" "$WORKSPACE/$f"
+# Kit copies are named *.template.md because the repo .gitignore excludes IDENTITY.md/USER.md.
+for f in IDENTITY USER; do
+  dest="$WORKSPACE/$f.md"
+  [ -f "$dest" ] && cp "$dest" "$dest.bak-$STAMP"
+  cp "$KIT_DIR/$(echo "$f" | tr '[:upper:]' '[:lower:]').template.md" "$dest"
 done
 # The first-run ritual is what made him ask "who am I?"; he knows now.
 [ -f "$WORKSPACE/BOOTSTRAP.md" ] && mv "$WORKSPACE/BOOTSTRAP.md" "$WORKSPACE/BOOTSTRAP.md.bak-$STAMP"
